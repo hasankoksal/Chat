@@ -1,0 +1,321 @@
+{% load static %}
+<html>
+<head>
+    <title>
+        Hasan
+    </title>
+    <meta charset="utf-8" name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<style>
+    #progressBar {
+  width: 90%;
+  margin: 10px auto;
+  height: 22px;
+  background-color: #0A5F44;
+}
+
+#progressBar div {
+  height: 100%;
+  text-align: right;
+  padding: 0 10px;
+  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+  width: 0;
+  background-color: #CBEA00;
+}
+
+.user {
+    color: #1fc91c;
+}
+
+.loser {
+    color: #d10000;
+}
+</style>
+    <div class='row'>
+        <div class="col-sm-1 col-md-2 col-lg-2 col-xl-3"></div>
+        <div class="col-sm-10 col-md-8 col-lg-8 col-xl-6 col">
+            {% include 'chat/navbar.html' %}
+            <div class="card bg-light">
+                <div class="card-header">
+                    <div id="progressBar">
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <div id="QuestionBox"></div>
+                    <div id="AnswerBox">Your answer:</div>
+                </div>
+                <div class="card-footer" id='UsersBox'></div>
+            </div>
+        </div>
+        <div class="col-sm-1 col-md-2 col-lg-2 col-xl-3"></div>
+    </div>
+    <div class="row">
+    <div class="col-5"></div>
+    <div class="col-2">
+    <table id="buttons">
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" class="btn btn-light" value="↑" id='up'>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" class="btn btn-light" value="←" id='left'>
+            </td>
+            <td></td>
+            <td>
+                <input type="button" class="btn btn-light" value="→" id='right'>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" class="btn btn-light" value="↓" id='down'>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    </div>
+    <div class="col-5"></div>
+    </div>
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body" id="myModalBody">
+                <div id="Starter">
+                    <div class="form-group">
+                        <label for="user-name">Username:</label>
+                        <input type="text" class="form-control" id="user-name-text" value="{{ username }}">
+                    </div>
+                    <input type="button" class="btn btn-primary" id="user-name-button" value="Start">
+                </div>
+                <div id="Continue">
+                    <img src="{% static 'loader.gif' %}"><br>
+                    Please wait...
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class='modal fade' id='endModal'>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" id="endModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary" id="play-again-button" value="Play Again">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    var websckt = new WebSocket('ws://'+ window.location.host +'/ws/');
+    var question, time, user_name, interval, timeleft;
+    var on_game = false, search_room=false, lose_before_game=false;
+    var winner = false;
+    var user_answer = '', answer = '';
+    var get_user_name = true;
+    function user_answer_change(x, ans){
+        user_answer = x;
+        $('#AnswerBox').html("Your answer:"+ ans);
+    }
+    function Modal_shower(){
+    $('#myModal').modal({backdrop:'static'});
+    }
+    function End_Modal_shower(text){
+        $('#endModalBody').html(text);
+        $('#endModal').modal({backdrop:'static'});
+    }
+    function user_click(){
+        if(get_user_name){
+        user_name = $('#user-name-text').val();
+        websckt.send(JSON.stringify({
+            'type': 'search_room',
+            'message': user_name,
+        }));
+        $('#Starter').hide()
+        $('#Continue').show()
+        // $('#myModalBody').html(`
+        // <img src="{% static 'loader.gif' %}"><br>
+        // Please wait...
+        // `);
+        search_room = true;
+        get_user_name = false;
+    }}
+    function show_question(){
+        $('#QuestionBox').html(question);
+        timeleft = time;
+        var totaltime = timeleft;
+        interval = setInterval(function(){
+            progress(totaltime, $('#progressBar'), 'question');
+        }, 10);
+        // progress(time, time, $('#progressBar'), 'question');
+        
+    }
+    function list_users(ids, usernames){
+        var html_output = "";
+        for(i=0; i<ids.length; i++){
+            html_output += "<div class='user' id='" + ids[i] + "'>" + usernames[i] + "</div>";
+        }
+        $("#UsersBox").html(html_output);
+    }
+    function on_lose_another(id){
+        var tag_id = "#" + id;
+        $(tag_id).removeClass("user");
+        $(tag_id).addClass("loser");
+    }
+    function send_correct(){
+        websckt.send(JSON.stringify({
+            'type': 'correct',
+        }));
+    }
+    function wait_message(e){
+        console.log(e.data)
+        const data = JSON.parse(e.data);
+        if (data.type == 'question'){
+            question = data.question;
+            answer = data.answer;
+            time = data.time;
+            if (!on_game){
+                show_question();
+                search_room = false;
+                on_game = true;
+            }
+        }
+        if (data.type == 'start'){
+            $('#myModal').modal('hide');
+            list_users(data.ids, data.usernames);
+        }
+        if (data.type == 'win'){
+            End_Modal_shower('YOU ARE WİNNER!');
+            websckt.close(1000);
+            clearInterval(interval);
+                on_game = false;
+            }
+        if (data.type == 'lose_another'){
+            on_lose_another(data.id);
+        }
+        }
+        websckt.onmessage = function (e){wait_message(e);};
+
+    function progress(timetotal, $element, why) {
+    var progressBarWidth = timeleft * $element.width() / timetotal;
+    timeleft -= 1;
+    $element.find('div').width(progressBarWidth);
+    if(timeleft > 0) {
+        // setTimeout(function() {progress(timeleft - 1, timetotal, $element, why);}, 10);
+    }
+    else {
+        if (why === 'question'){
+            clearInterval(interval);
+            control_answer();
+        }
+        if (why === 'wait'){
+            clearInterval(interval)
+            show_question();
+        }
+    }
+}
+
+    function control_answer(){
+        if (!(user_answer == '') && !(answer.search(user_answer) == '-1')){
+            correct_answer();
+            user_answer_change('', '');
+        }
+        else{
+            wrong_answer();
+        }
+    }
+    function correct_answer(){
+        $('#QuestionBox').html('CORRECT!');
+        timeleft = 100;
+        var totaltime = timeleft;
+        interval = setInterval(function(){
+            progress(totaltime, $('#progressBar'), 'wait');
+        }, 10);
+        // progress(150, 150, $('#progressBar'), 'wait');
+        send_correct();
+    }
+
+    function wrong_answer(){
+        websckt.send(JSON.stringify({
+            'type': 'lose',
+        }));
+        End_Modal_shower("WRONG!");
+        websckt.close();
+        on_game = false;
+    }
+    function leave_site(){
+        if(on_game){
+        End_Modal_shower("YOU LEFT AND LOSE!");
+        clearInterval(interval);
+        websckt.close(1000);
+        }
+        if(search_room){
+            lose_before_game = true;
+            websckt.close(1000);
+            $('#myModal').modal('hide');
+            End_Modal_shower('PLEASE WAIT CREATING GAME AGAIN!');
+        }}
+    function play_again(){
+        websckt = new WebSocket('ws://' + window.location.host + '/ws/');
+        websckt.onmessage = function (e){wait_message(e);}
+        question = null;
+        time = null;
+        user_name = null;
+        interval = null;
+        timeleft = null;
+        on_game = false;
+        search_room = false;
+        lose_before_game = false;
+        winner = false;
+        user_answer_change('', '');
+        answer = '';
+        get_user_name = true;
+        $("#UsersBox").html();
+        $('#QuestionBox').html();
+        $('#endModal').modal('hide');
+        Modal_shower()
+        $('#Starter').show()
+        $('#Continue').hide()
+//         $('#myModalBody').html(`
+// <div class="form-group">
+// <label for="user-name">Username:</label>
+// <input type="text" class="form-control" id="user-name-text">
+// </div>
+// <input type="button" class="btn btn-primary" id="user-name-button" value="Start">
+//         `)
+        // $('#user-name-button').click(function(){user_click();});
+    }
+
+    $(document).ready(function(){
+        $('#Continue').hide()
+        $('#user-name-button').click(function(){user_click();});
+        $('#user-name-text').focus();
+        $('#myModal').modal({backdrop:'static'});
+        $('#up').click (function(){user_answer_change('W', '↑');});
+        $('#down').click(function(){user_answer_change('S', '↓');});
+        $('#left').click(function(){user_answer_change('A', '←');});
+        $('#right').click(function(){user_answer_change('D', '→');});
+        $('#play-again-button').click(function(){play_again();});
+        $(window).blur(function(){leave_site();});
+        $('#user-name-text').keyup(function(e){if(e.keycode === 13){console.log('Ceee')}});
+        $(window).keyup(function(e){
+            if (e.keyCode === 38 || e.keyCode === 87){user_answer_change('W', '↑')}
+            if (e.keyCode === 37 || e.keyCode === 65){user_answer_change('A', '←')}
+            if (e.keyCode === 40 || e.keyCode === 83){user_answer_change('S', '↓')}
+            if (e.keyCode === 39 || e.keyCode === 68){user_answer_change('D', '→')}
+            if (e.keyCode === 13){user_click();}
+        });
+        });
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+</body>
+</html>

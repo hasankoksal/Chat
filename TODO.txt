@@ -1,0 +1,38 @@
++ Javascript sayfa güncelleme öğren
+- Bootstrap ile sayfayı güzelleştir
++ Javascript websocket ile veri yolla
++ Consumer socket bağlantısı kur
++ Zamanlama
++ Soruları yaz
++ Soru göster
++ Soru değişimini ayarla
++ Tuşları koy
++ Tuşların fonksiyonlarını tanımla
++ Soru kontrol et
++ Kullanıcı kaybetmesi
++ Kullanıcı kazanması
++ Oda kapanması
++ Oda oluşturma süresi
++ Oda kapanana kadar kullanıcıyı beklet
++ Botu yaz
++ Botlara soru çözdür
++ Kullanıcı listeleme
++ Kullanıcı isimlerini renklendir
++ Yenilen kullanıcıyı göster
++ Kullanıcı yenildiğinde gönder
++ Kazanmayı yenilen kullanıcıya göre düzenle
++ Başa sar
++ End modal
++ Slow - Fast
++ Botu isimlendir(getname)
++ Kullanıcı adını öngör(getname)
++ Klavye fonksiyonları(Enter wasd oklar)
++ Tuşları ortala(tablo içinde)
++ Kullanıcının cevabını göster
+- Sesler
+- Play with friends
+- Siteyi daha güzel hale getir
+- Css çalışması
+- Market
++ Kullanıcıları eşleştir
+- SON
