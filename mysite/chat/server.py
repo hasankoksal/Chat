@@ -64,7 +64,6 @@ class Room():
 
     def close_room(self):
         self.open = False
-        print("Oda kapandı")
         for sckt in self.users:
             sckt.sendall(json.dumps({
                 'type': 'start',
@@ -141,7 +140,7 @@ class Room():
             'type': 'question',
             'question': self.questions[random_question_number][0],
             'answer': self.questions[random_question_number][1],
-            'time': time_int,
+            'time': time_int//2,
         }
         for sckt in self.users.keys():
             sckt.sendall(json.dumps(question_json).encode('utf-8'))
@@ -170,7 +169,7 @@ class Bot():
 
     def __init__(self, ):
         self.name = getname.random_name('superhero')
-        self.correct_rate = 40
+        self.correct_rate = 85
 
     def answer_question(self):
         random_number = random.randint(0, 100)
@@ -242,13 +241,10 @@ class Server():
             # Kullanıcı oda sorduysa ona oda bul
             self.join_or_create_room(sckt, message['message'])
         if message['type'] == 'leave':
-            print('Ayrıldı:')
-            print(self.all_users)
             for i in range(len(self.all_users)):
                 if sckt == self.all_users[i]:
                     del self.all_users[i]
                     break
-            print(self.all_users)
             try:
                 room = self.user_to_room[sckt]
                 del self.user_to_room[sckt]
