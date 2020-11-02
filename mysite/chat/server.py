@@ -5,6 +5,9 @@ import time
 import random
 import getname
 
+with open("server_open.txt", "w") as f:
+    f.write("True")
+
 
 class Room():
 
@@ -169,7 +172,7 @@ class Bot():
 
     def __init__(self, ):
         self.name = getname.random_name('superhero')
-        self.correct_rate = 85
+        self.correct_rate = 90
 
     def answer_question(self):
         random_number = random.randint(0, 100)
@@ -227,12 +230,15 @@ class Server():
         """
         Mesaj gelmesini bekler
         """
-        while sckt in self.all_users:
-            incoming_buffer = sckt.recv(256)
-            if not incoming_buffer:
-                break
-            last_received_message = json.loads(incoming_buffer.decode('utf-8'))
-            self.control_messages(last_received_message, sckt)
+        try:
+            while sckt in self.all_users:
+                incoming_buffer = sckt.recv(256)
+                if not incoming_buffer:
+                    break
+                last_received_message = json.loads(incoming_buffer.decode('utf-8'))
+                self.control_messages(last_received_message, sckt)
+        except ConnectionResetError:
+            pass
         sckt.close()
 
     def control_messages(self, message, sckt):

@@ -6,50 +6,30 @@
     </title>
     <meta charset="utf-8" name="viewport" content="width=device-width">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css_js/index.css' %}">
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <style>
-    #progressBar {
-  width: 90%;
-  margin: 10px auto;
-  height: 22px;
-  background-color: #0A5F44;
-}
-
-#progressBar div {
-  height: 100%;
-  text-align: right;
-  padding: 0 10px;
-  line-height: 22px; /* same as #progressBar height if we want text middle aligned */
-  width: 0;
-  background-color: #CBEA00;
-}
-
-.user {
-    color: #1fc91c;
-}
-
-.loser {
-    color: #d10000;
-}
 </style>
     <div class='row'>
         <div class="col-sm-1 col-md-2 col-lg-2 col-xl-3"></div>
         <div class="col-sm-10 col-md-8 col-lg-8 col-xl-6 col">
             {% include 'chat/navbar.html' %}
-            <div class="card bg-light">
+            <div class="card bg-light" id="GameBox">
                 <div class="card-header">
-                    <div id="progressBar">
-                        <div class="bar"></div>
+                    <div class="progress" id="progressBar">
+                        <div class="progress-bar  bg-danger" style="width: 100%;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"></div>
                     </div>
+
                 </div>
                 <div class="card-body text-center" id='ParentQuestionBox'>
                     <div id="QuestionBox"></div>
                     <div id="AnswerBox">Your answer:</div>
                 </div>
-                <div class="card-footer" id='UsersBox'></div>
+                <div class="card-footer">Engineers:<div id='UsersBox'></div></div>
             </div>
+            {% include 'chat/market.html' %}
         </div>
         <div class="col-sm-1 col-md-2 col-lg-2 col-xl-3"></div>
     </div>
@@ -60,23 +40,23 @@
         <tr>
             <td></td>
             <td>
-                <input type="button" class="btn btn-light" value="↑" id='up'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(270deg); -webkit-transform: rotate(270deg);" id='up'>
             </td>
             <td></td>
         </tr>
         <tr>
             <td>
-                <input type="button" class="btn btn-light" value="←" id='left'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(180deg); -webkit-transform: rotate(180deg);" id='left'>
             </td>
             <td></td>
             <td>
-                <input type="button" class="btn btn-light" value="→" id='right'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;" id='right'>
             </td>
         </tr>
         <tr>
             <td></td>
             <td>
-                <input type="button" class="btn btn-light" value="↓" id='down'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(90deg); -webkit-transform: rotate(90deg);" id='down'>
             </td>
             <td></td>
         </tr>
@@ -84,19 +64,25 @@
     </div>
     <div class="col-5"></div>
     </div>
+    {% include 'chat/leaboard.html' %}
     <div class="modal fade" id="myModal">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-body" id="myModalBody">
                 <div id="Starter">
                     <div class="form-group">
-                        <label for="user-name">Username:</label>
+                        <label for="user-name">Engineer name:</label>
                         <input type="text" class="form-control" id="user-name-text" value="{{ username }}">
                     </div>
+                    <input type="button" class="btn btn-danger" id="market-button" value="Shop">
                     <input type="button" class="btn btn-primary" id="user-name-button" value="Start">
                 </div>
                 <div id="Continue">
-                    <img src="{% static 'loader.gif' %}"><br>
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </div>
                     Please wait...
                 </div>
             </div>
@@ -119,197 +105,13 @@
             </div>
         </div>
     </div>
+<script src="{% static 'css_js/index.js' %}"></script>
     <script>
-    var websckt = new WebSocket('ws://'+ window.location.host +'/ws/');
-    var question, time, user_name, interval, timeleft;
-    var on_game = false, search_room=false, lose_before_game=false;
-    var winner = false;
-    var user_answer = '', answer = '';
-    var get_user_name = true;
-    function user_answer_change(x, ans){
-        user_answer = x;
-        $('#AnswerBox').html("Your answer:"+ ans);
-    }
-    function Modal_shower(){
-    $('#myModal').modal({backdrop:'static'});
-    }
-    function End_Modal_shower(text){
-        if (text == 'WRONG!'){
-            $('#endModalHeader').show();
-            $('#endModalHeader').html(text);
-            question_box_value = $('#ParentQuestionBox').html();
-            $('#endModalBody').html(question_box_value);
-        }
-        else{
-        $('#endModalHeader').hide();
-        $('#endModalBody').html(text);
-        }
-    $('#endModal').modal({backdrop:'static'});
-    }
-    function user_click(){
-        if(get_user_name){
-        user_name = $('#user-name-text').val();
-        websckt.send(JSON.stringify({
-            'type': 'search_room',
-            'message': user_name,
-        }));
-        $('#Starter').hide()
-        $('#Continue').show()
-        // $('#myModalBody').html(`
-        // <img src="{% static 'loader.gif' %}"><br>
-        // Please wait...
-        // `);
-        search_room = true;
-        get_user_name = false;
-    }}
-    function show_question(){
-        $('#QuestionBox').html(question);
-        timeleft = time;
-        var totaltime = timeleft;
-        interval = setInterval(function(){
-            progress(totaltime, $('#progressBar'), 'question');
-        }, 10);
-        // progress(time, time, $('#progressBar'), 'question');
-        
-    }
-    function list_users(ids, usernames){
-        var html_output = "";
-        for(i=0; i<ids.length; i++){
-            html_output += "<div class='user' id='" + ids[i] + "'>" + usernames[i] + "</div>";
-        }
-        $("#UsersBox").html(html_output);
-    }
-    function on_lose_another(id){
-        var tag_id = "#" + id;
-        $(tag_id).removeClass("user");
-        $(tag_id).addClass("loser");
-    }
-    function send_correct(){
-        websckt.send(JSON.stringify({
-            'type': 'correct',
-        }));
-    }
-    function wait_message(e){
-
-        const data = JSON.parse(e.data);
-        if (data.type == 'question'){
-            question = data.question;
-            answer = data.answer;
-            time = data.time;
-            if (!on_game){
-                show_question();
-                search_room = false;
-                on_game = true;
-            }
-        }
-        if (data.type == 'start'){
-            $('#myModal').modal('hide');
-            list_users(data.ids, data.usernames);
-        }
-        if (data.type == 'win'){
-            End_Modal_shower('YOU ARE WİNNER!');
-            websckt.close(1000);
-            clearInterval(interval);
-                on_game = false;
-            }
-        if (data.type == 'lose_another'){
-            on_lose_another(data.id);
-        }
-        }
-        websckt.onmessage = function (e){wait_message(e);};
-
-    function progress(timetotal, $element, why) {
-    var progressBarWidth = timeleft * $element.width() / timetotal;
-    timeleft -= 1;
-    $element.find('div').width(progressBarWidth);
-    if(timeleft > 0) {
-        // setTimeout(function() {progress(timeleft - 1, timetotal, $element, why);}, 10);
-    }
-    else {
-        if (why === 'question'){
-            clearInterval(interval);
-            control_answer();
-        }
-        if (why === 'wait'){
-            clearInterval(interval)
-            show_question();
-        }
-    }
-}
-
-    function control_answer(){
-        if (!(user_answer == '') && !(answer.search(user_answer) == '-1')){
-            correct_answer();
-            user_answer_change('', '');
-        }
-        else{
-            wrong_answer();
-        }
-    }
-    function correct_answer(){
-        $('#QuestionBox').html('CORRECT!');
-        timeleft = 100;
-        var totaltime = timeleft;
-        interval = setInterval(function(){
-            progress(totaltime, $('#progressBar'), 'wait');
-        }, 10);
-        // progress(150, 150, $('#progressBar'), 'wait');
-        send_correct();
-    }
-
-    function wrong_answer(){
-        websckt.send(JSON.stringify({
-            'type': 'lose',
-        }));
-        End_Modal_shower("WRONG!");
-        websckt.close();
-        on_game = false;
-    }
-    function leave_site(){
-        if(on_game){
-        End_Modal_shower("YOU LEFT AND LOSE!");
-        clearInterval(interval);
-        websckt.close(1000);
-        }
-        if(search_room){
-            lose_before_game = true;
-            websckt.close(1000);
-            $('#myModal').modal('hide');
-            End_Modal_shower('PLEASE WAIT CREATING GAME AGAIN!');
-        }}
-    function play_again(){
-        websckt = new WebSocket('ws://' + window.location.host + '/ws/');
-        websckt.onmessage = function (e){wait_message(e);}
-        question = null;
-        time = null;
-        user_name = null;
-        interval = null;
-        timeleft = null;
-        on_game = false;
-        search_room = false;
-        lose_before_game = false;
-        winner = false;
-        user_answer_change('', '');
-        answer = '';
-        get_user_name = true;
-        $("#UsersBox").html('');
-        $('#QuestionBox').html('');
-        $('#endModal').modal('hide');
-        Modal_shower()
-        $('#Starter').show()
-        $('#Continue').hide()
-//         $('#myModalBody').html(`
-// <div class="form-group">
-// <label for="user-name">Username:</label>
-// <input type="text" class="form-control" id="user-name-text">
-// </div>
-// <input type="button" class="btn btn-primary" id="user-name-button" value="Start">
-//         `)
-        // $('#user-name-button').click(function(){user_click();});
-    }
-
     $(document).ready(function(){
         $('#Continue').hide()
+        $('#MarketBox').hide()
+        $('#ArrowBox').hide()
+        $('#LeaboardBox').hide()
         $('#user-name-button').click(function(){user_click();});
         $('#user-name-text').focus();
         $('#myModal').modal({backdrop:'static'});
@@ -317,7 +119,16 @@
         $('#down').click(function(){user_answer_change('S', '↓');});
         $('#left').click(function(){user_answer_change('A', '←');});
         $('#right').click(function(){user_answer_change('D', '→');});
+        $('#market-button').click(function(){open_market();});
+        $('#leaboard-button').click(function(){open_leaboard();});
         $('#play-again-button').click(function(){play_again();});
+        $('#pink-button').click(function(){market_button_click("pink")});
+        $('#yellow-button').click(function(){market_button_click("yellow")});
+        $('#black-button').click(function(){market_button_click("black")});
+        $('#buy').click(function(){buy_click();});
+        $('#Return-Start').click(function(){market_return_click();});
+        $('#Return-Box').click(function(){list_return_click();});
+        $('#Arrow-list-button').click(function(){arrows_list();});
         $(window).blur(function(){leave_site();});
         $(window).keyup(function(e){
             if (e.keyCode === 13 && !on_game && !search_room){user_click();}
@@ -328,7 +139,20 @@
                 if (e.keyCode === 39 || e.keyCode === 68){user_answer_change('D', '→')}
             }
         });
+        if (!sessionStorage.getItem("Money")){
+            sessionStorage.setItem("Money", "50");
+        }
+        if (!sessionStorage.getItem("Multipler")){
+            sessionStorage.setItem("Multipler", "1")
+        }
+        show_money();
         });
+    leaboard_sckt.onopen = function(){
+        leaboard_sckt.send(JSON.stringify({
+        'type': 'join',
+        'money': sessionStorage.getItem("Money"),
+    }));
+    }
 </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 </body>

@@ -121,3 +121,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+import subprocess
+import time
+
+with open(os.path.join(BASE_DIR, "chat", "server_open.txt"), "r") as f:
+    if not f.read() == "True":
+        subprocess.Popen([os.path.join(BASE_DIR, "mysite", "server.bat")])
+        time.sleep(0.2)
+        subprocess.Popen([os.path.join(BASE_DIR, "mysite", "leaboard.bat")])

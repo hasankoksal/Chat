@@ -1,3 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{% url 'index' %}">Arrows.engineer</a>
+    <a class="navbar-brand navbar-collapse" href="{% url 'index' %}" style="width: 30%;text-align: left;">Arrows.engineer</a>
+    <div class="navbar-item" id="leaboard-button" style="width: 30%;text-align: center;">
+        <span class="navbar-toggler-icon" value=""></span>
+    </div>
+
+    <div class="navbar-item disabled" style="width: 40%;text-align: right;">
+        <div id="QuestionNumber" style="display:inline">Money:</div>
+        <div id="ChangeQuestionNumber" style="display:inline">0</div>$
+        (<div id="MultiplerNumber" style="display:inline">1</div>x)
+    </div>
 </nav>

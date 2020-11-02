@@ -1,5 +1,5 @@
 + Javascript sayfa güncelleme öğren
-- Bootstrap ile sayfayı güzelleştir
++ Bootstrap ile sayfayı güzelleştir
 + Javascript websocket ile veri yolla
 + Consumer socket bağlantısı kur
 + Zamanlama
@@ -23,16 +23,46 @@
 + Kazanmayı yenilen kullanıcıya göre düzenle
 + Başa sar
 + End modal
-+ Slow - Fast
 + Botu isimlendir(getname)
 + Kullanıcı adını öngör(getname)
 + Klavye fonksiyonları(Enter wasd oklar)
 + Tuşları ortala(tablo içinde)
 + Kullanıcının cevabını göster
++ Css çalışması
++ Market
++ Kullancıya ok ver
++ Oklar için session kullan(JSON)
++ Kullanıcıya aynı okları verme
++ Oklar bitince veremiyorum de
++ ProgressBar ı Bootstrap ile yap
++ ProgressBar ı çalıştır
++ Kullanıcının oklarını göster
++ Kullanıcıya oklarını kullandır
++ Down tuşunu tamir et
++ Justify
+    Acayip duygulandım şu an
+    Bütün mesele text-alignmiş
++ İlk butonları değiştir
++ Resimlerin açısını değiştir(90, 180, 270)
++ Leaboard
++ Navbarı düzelt
++ Leaboard güzelleştir
++ Leaboard bağlantısı(İlk oynama)
++ Leaboard gönder(Sürekli)
++ Leaboard göster(Geldikçe)
++ Aynı isimli kullanıcılar hatası
++ Kullanıcı çıkınca yeniden yollamıyor
+    Bin atlı, akınlarda çocuklar gibi şendik;
+    Bin atlı o gün dev gibi bir orduyu yendik!
++ Ok resimleri indir
++ Ok resimlerini seç
++ Js ayır
++ Css ayır
++ Kullanıcıları eşleştir
+
+Version 2.0
+- Kutu alındığında tik çıkar
 - Sesler
 - Play with friends
-- Siteyi daha güzel hale getir
-- Css çalışması
-- Market
-+ Kullanıcıları eşleştir
+- Slow - Fast
 - SON
