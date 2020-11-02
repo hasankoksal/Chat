@@ -65,4 +65,7 @@ Version 2.0
 - Sesler
 - Play with friends
 - Slow - Fast
+- Favicon
+- 404
+- Admin sayfasını kapat
 - SON
