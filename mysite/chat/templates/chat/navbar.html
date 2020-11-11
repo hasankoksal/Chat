@@ -1,5 +1,8 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand navbar-collapse" href="{% url 'index' %}" style="width: 30%;text-align: left;">Arrows.engineer</a>
+    <a class="navbar-brand navbar-collapse" href="{% url 'index' %}" style="width: 30%;text-align: left;">
+    <img src="{% static 'Basic_img/favicon.png' %}">
+    </a>
     <div class="navbar-item" id="leaboard-button" style="width: 30%;text-align: center;">
         <span class="navbar-toggler-icon" value=""></span>
     </div>

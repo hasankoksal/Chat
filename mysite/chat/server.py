@@ -5,9 +5,6 @@ import time
 import random
 import getname
 
-with open("server_open.txt", "w") as f:
-    f.write("True")
-
 
 class Room():
 

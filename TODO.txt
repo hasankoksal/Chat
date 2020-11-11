@@ -60,6 +60,11 @@
 + Css ayır
 + Kullanıcıları eşleştir
 
+İlk yayına alma
++ Unit files
+- Resimleri düzelt
+- Websocket sunucusu kur
+
 Version 2.0
 - Kutu alındığında tik çıkar
 - Sesler
