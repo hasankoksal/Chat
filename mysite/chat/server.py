@@ -43,7 +43,8 @@ class Room():
             ["DOWN OR LEFT", "SA"],
         ]
 
-        self.time_list = [500, 450, 400, 360, 320, 300,
+        self.time_list = [600, 550, 525, 
+                          500, 450, 400, 360, 320, 300,
                           300, 300, 300, 300, 280, 280, 280, 270, 270, 270,
                           260, 260, 260, 250, 250, 250, 240, 240, 240, 230,
                           230, 230, 220, 220, 220, 210, 210, 210, 200, 200,
@@ -169,7 +170,7 @@ class Bot():
 
     def __init__(self, ):
         self.name = getname.random_name('superhero')
-        self.correct_rate = 90
+        self.correct_rate = 100
 
     def answer_question(self):
         random_number = random.randint(0, 100)

@@ -86,10 +86,7 @@
         var totaltime = timeleft;
         $('#progressBar').find("div").removeClass("bg-success")
         $('#progressBar').find("div").addClass("bg-danger")
-        interval = setInterval(function(){
-            progress(totaltime, $('#progressBar'), 'question');
-
-        }, 10);
+        select_progress(totaltime, $('#progressBar'), 'question');
         // $('#progressBar').find('div').attr("aria-valuemax", String(totaltime))
     }
     function list_users(ids, usernames){
@@ -142,12 +139,25 @@
         }
         websckt.onmessage = function (e){wait_message(e);};
 
-    function progress(timetotal, $element, why) {
+    function select_progress(totaltime, $element, why){
+        if (screen.width<768){
+            interval = setInterval(function(){
+                $element.find('div').width("100%")
+                small_progress(totaltime, $element, why);
+            }, 50);
+        }
+        else{
+            interval = setInterval(function(){
+                big_progress(totaltime, $element, why);
+            }, 50);
+        }
+    }
+
+    function big_progress(timetotal, $element, why) {
     var progressBarWidth = Math.floor(timeleft * 100 / timetotal);
-    timeleft -= 1;
-    // $element.find('div').width(progressBarWidth);
-    // $element.find('div').attr("aria-valuenow", String(timeleft))
+    timeleft -= 5;
     $element.find('div').width(progressBarWidth + "%")
+    $element.find('div').html(Math.floor(timeleft/10)/10)
     if(timeleft > 0) {
     }
     else {
@@ -161,6 +171,23 @@
         }
     }
 }
+
+    function small_progress(timetotal, $element, why){
+        timeleft -= 5;
+        $element.find('div').html(Math.floor(timeleft/10)/10)
+        if(timeleft > 0) {
+        }
+        else {
+            if (why === 'question'){
+                clearInterval(interval);
+                control_answer();
+            }
+            if (why === 'wait'){
+                clearInterval(interval)
+                show_question();
+            }
+        }
+    }
 
     function control_answer(){
         if (!(user_answer == '') && !(answer.search(user_answer) == '-1')){
@@ -177,10 +204,7 @@
         var totaltime = timeleft;
         $('#progressBar').find("div").removeClass("bg-danger")
         $('#progressBar').find("div").addClass("bg-success")
-        interval = setInterval(function(){
-            progress(totaltime, $('#progressBar'), 'wait');
-        }, 10);
-        // $('#progressBar').find('div').attr("aria-valuemax", String(totaltime))
+        select_progress(totaltime, $('#progressBar'), 'wait');
         send_correct();
         question_number = sessionStorage.getItem("Money")
         multipler = sessionStorage.getItem("Multipler")
