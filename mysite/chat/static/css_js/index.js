@@ -296,7 +296,7 @@
                 alert("I don't have any pink box")
                 break;
             }
-            if (! money<25){
+            if (!(money<25)){
                 choose_arrow(pink_arrows_list)
                 money = String(money - 25)
                 multipler = String(Number(multipler) + 1)
@@ -311,7 +311,7 @@
                 alert("I don't have any yellow box")
                 break;
             }
-            if (!money<250){
+            if (!(money<250)){
                 choose_arrow(yellow_arrows_list)
                 money = String(money - 250)
                 multipler = String(multipler + 5)
@@ -326,7 +326,7 @@
                 alert("I don't have any black box")
                 break;
             }
-            if (! money<1000){
+            if (!(money<1000)){
                 choose_arrow(black_arrows_list)
                 money = String(money - 1000)
                 multipler = String(multipler + 15)
