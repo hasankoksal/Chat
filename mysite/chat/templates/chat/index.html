@@ -79,7 +79,8 @@
                         <input type="text" class="form-control" id="user-name-text" value="{{ username }}">
                     </div>
                     <input type="button" class="btn btn-danger" id="market-button" value="Shop">
-                    <input type="button" class="btn btn-primary" id="user-name-button" value="Start">
+                    <input type="button" class="btn btn-primary" id="slow-button" value="Play slow">
+                    <input type="button" class="btn btn-primary" id="fast-button" value="Play fast">
                 </div>
                 <div id="Continue">
                     <div class="d-flex justify-content-center">
@@ -164,7 +165,8 @@
         $('#MarketBox').hide()
         $('#ArrowBox').hide()
         $('#LeaboardBox').hide()
-        $('#user-name-button').click(function(){user_click();});
+        $('#slow-button').click(function(){user_click("Slow");});
+        $('#fast-button').click(function(){user_click("Fast");});
         $('#user-name-text').focus();
         $('#myModal').modal({backdrop:'static'});
         $('#up').click (function(){user_answer_change('W', '↑');});
@@ -183,13 +185,10 @@
         $('#Arrow-list-button').click(function(){arrows_list();});
         $(window).blur(function(){leave_site();});
         $(window).keyup(function(e){
-            if (e.keyCode === 13 && !on_game && !search_room){user_click();}
-            else{
                 if (e.keyCode === 38 || e.keyCode === 87){user_answer_change('W', '↑')}
                 if (e.keyCode === 37 || e.keyCode === 65){user_answer_change('A', '←')}
                 if (e.keyCode === 40 || e.keyCode === 83){user_answer_change('S', '↓')}
                 if (e.keyCode === 39 || e.keyCode === 68){user_answer_change('D', '→')}
-            }
         });
         if (!sessionStorage.getItem("Money")){
             sessionStorage.setItem("Money", "50");

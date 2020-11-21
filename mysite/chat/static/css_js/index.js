@@ -1,5 +1,5 @@
-    var websckt = new WebSocket('ws://'+ window.location.host +'/ws/');
-    var leaboard_sckt = new WebSocket('ws://' + window.location.host + '/ws/leaboard/');
+    var websckt = new WebSocket('wss://'+ window.location.host +'/ws/');
+    var leaboard_sckt = new WebSocket('wss://' + window.location.host + '/ws/leaboard/');
     var question, time, user_name, interval, timeleft;
     var on_game = false, search_room=false;
     var winner = false;
@@ -64,12 +64,13 @@
             change_leaboard(data.usernames, data.moneys, data.ids, data.id)
         }}
 
-    function user_click(){
+    function user_click(room_type){
         if(get_user_name){
         user_name = $('#user-name-text').val();
         websckt.send(JSON.stringify({
             'type': 'search_room',
             'message': user_name,
+            'room_type': room_type,
         }));
         $('#Starter').hide()
         $('#Continue').show()

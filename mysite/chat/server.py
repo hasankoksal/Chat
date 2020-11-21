@@ -8,7 +8,7 @@ import getname
 
 class Room():
 
-    def __init__(self, server):
+    def __init__(self, server, room_type):
         # Server nesnesi
         self.server = server
         # Kullanıcı socketlerinin tutulduğu dict {socket:username}
@@ -23,6 +23,8 @@ class Room():
         self.max_user = 3
         # Tekrar soru isteyen kullanıcılar
         self.continued_users = []
+        # Yavaş veya hızlı str
+        self.room_type = room_type
 
         # Odaya kullanıcı girmesini kontrol eden değişken
         self.open = True
@@ -137,11 +139,13 @@ class Room():
             time_int = self.time_list[self.time_number]
         except IndexError:
             time_int = 100
+        if self.room_type == "Fast":
+            time_int = time_int//2
         question_json = {
             'type': 'question',
             'question': self.questions[random_question_number][0],
             'answer': self.questions[random_question_number][1],
-            'time': time_int//2,
+            'time': time_int,
         }
         for sckt in self.users.keys():
             sckt.sendall(json.dumps(question_json).encode('utf-8'))
@@ -159,10 +163,13 @@ class Room():
             self.wrong_answer(sckt)
 
     def delete(self):
-        for i in range(len(self.server.room_list)):
-            if self == self.server.room_list[i]:
-                del self.server.room_list[i]
+        for i in range(len(self.server.room_list_fast)):
+            if self == self.server.room_list_fast[i]:
+                del self.server.room_list_slow[i]
                 break
+        for i in range(len(self.server.room_list_slow)):
+            if self == self.server.room_list_slow[i]:
+                del self.server.room_list_slow[i]
         del self
 
 
@@ -170,7 +177,7 @@ class Bot():
 
     def __init__(self, ):
         self.name = getname.random_name('superhero')
-        self.correct_rate = 100
+        self.correct_rate = 90
 
     def answer_question(self):
         random_number = random.randint(0, 100)
@@ -184,29 +191,43 @@ class Server():
 
     def __init__(self):
         # Oluşturulmuş odaların listesi [Room]
-        self.room_list = []
+        self.room_list_fast = []
+        self.room_list_slow = []
         # Kullanıcının bulunduğu oda {socket:Room}
         self.user_to_room = {}
         # Serverdaki kullanıcılar [socket]
         self.all_users = []
         self.create_listening_server()
 
-    def join_or_create_room(self, sckt, username):
+    def join_or_create_room(self, sckt, username, room_type):
         room = False
-        for i in self.room_list:
-            if i.open:
-                room = i
-                break
+        if room_type == "Slow":
+            for i in self.room_list_slow:
+                if i.open:
+                    room = i
+                    break
+            if room:
+                room.join_room(sckt, username)
+                self.user_to_room[sckt] = room
+            else:
+                new_room = Room(self, room_type)
+                self.room_list_slow.append(new_room)
+                self.join_or_create_room(sckt, username, room_type)
 
-        if room:
-            room.join_room(sckt, username)
-            self.user_to_room[sckt] = room
+        if room_type == "Fast":
+            for i in self.room_list_fast:
+                if i.open:
+                    room = i
+                    break
 
-        else:
-            new_room = Room(self)
-            self.room_list.append(new_room)
+            if room:
+                room.join_room(sckt, username)
+                self.user_to_room[sckt] = room
 
-            self.join_or_create_room(sckt, username)
+            else:
+                new_room = Room(self, room_type)
+                self.room_list_fast.append(new_room)
+                self.join_or_create_room(sckt, username, room_type)
 
     def create_listening_server(self):
         """
@@ -243,7 +264,7 @@ class Server():
 
         if message['type'] == 'search_room':
             # Kullanıcı oda sorduysa ona oda bul
-            self.join_or_create_room(sckt, message['message'])
+            self.join_or_create_room(sckt, message['message'], message['room_type'])
         if message['type'] == 'leave':
             for i in range(len(self.all_users)):
                 if sckt == self.all_users[i]:

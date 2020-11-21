@@ -67,13 +67,12 @@
 + Buy tuşunu düzelt
 
 Version 2.0
-+ Local django sürümünü yükselt
-- Butonları ekrana orantıla
+~ Butonları ekrana orantıla
 - Kutu alındığında tik çıkar
 - Sesler
 - Play with friends
-- Slow - Fast
-- Favicon
++ Slow - Fast
++ Favicon
 - 404
 - Admin sayfasını kapat
 - SON
