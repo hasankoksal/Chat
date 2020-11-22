@@ -28,24 +28,9 @@ class Room():
 
         # Odaya kullanıcı girmesini kontrol eden değişken
         self.open = True
-        self.questions = [
-            ["UP", "W"],
-            ["DOWN", "S"],
-            ["LEFT", "A"],
-            ["RIGHT", "D"],
-            ["VERTİCAL", "WS"],
-            ["HORİZONTAL", "AD"],
-            ["REVERSE OF RIGHT", "A"],
-            ["REVERSE OF LEFT", "D"],
-            ["REVERSE OF UP", "S"],
-            ["REVERSE OF DOWN", "W"],
-            ["UP OR LEFT", "WA"],
-            ["UP OR RIGHT", "WD"],
-            ["DOWN OR RIGHT", "SD"],
-            ["DOWN OR LEFT", "SA"],
-        ]
+        self.questions = ["W", "S", "A", "D", "WS", "AD", "A", "D", "S", "W", "WA", "WD", "SD", "SA"]
 
-        self.time_list = [600, 550, 525, 
+        self.time_list = [600, 550, 525,
                           500, 450, 400, 360, 320, 300,
                           300, 300, 300, 300, 280, 280, 280, 270, 270, 270,
                           260, 260, 260, 250, 250, 250, 240, 240, 240, 230,
@@ -143,8 +128,8 @@ class Room():
             time_int = time_int//2
         question_json = {
             'type': 'question',
-            'question': self.questions[random_question_number][0],
-            'answer': self.questions[random_question_number][1],
+            'question': random.randint(0, 1),
+            'answer': self.questions[random_question_number],
             'time': time_int,
         }
         for sckt in self.users.keys():
@@ -163,13 +148,15 @@ class Room():
             self.wrong_answer(sckt)
 
     def delete(self):
-        for i in range(len(self.server.room_list_fast)):
-            if self == self.server.room_list_fast[i]:
-                del self.server.room_list_slow[i]
-                break
-        for i in range(len(self.server.room_list_slow)):
-            if self == self.server.room_list_slow[i]:
-                del self.server.room_list_slow[i]
+        if len(self.server.room_list_fast):
+            for i in range(len(self.server.room_list_fast)):
+                if self == self.server.room_list_fast[i]:
+                    del self.server.room_list_fast[i]
+                    break
+        if len(self.server.room_list_slow):
+            for i in range(len(self.server.room_list_slow)):
+                if self == self.server.room_list_slow[i]:
+                    del self.server.room_list_slow[i]
         del self
 
 

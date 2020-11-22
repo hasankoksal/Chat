@@ -23,7 +23,15 @@
 
                 </div>
                 <div class="card-body text-center" id='ParentQuestionBox'>
-                    <div id="QuestionBox"></div>
+                    <div id="CorrectBox">Correct!</div>
+                    <div id="QuestionBox">
+                        <img src="{% static 'Question/BD.png' %}" style="max-width:120;height: 120;" id="Blue-arrow">
+                        <img src="{% static 'Question/BAD.png' %}" style="max-width:120;height: 120;" id="Blue-twice">
+                        <img src="{% static 'Question/BWD.png' %}" style="max-width:120;height: 120;" id="Blue-double">
+                        <img src="{% static 'Question/RD.png' %}" style="max-width:120;height: 120;" id="Red-arrow">
+                        <img src="{% static 'Question/RAD.png' %}" style="max-width:120;height: 120;" id="Red-twice">
+                        <img src="{% static 'Question/RWD.png' %}" style="max-width:120;height: 120;" id="Red-double">
+                    </div>
                     <div id="AnswerBox">Your answer:</div>
                 </div>
                 <div class="card-footer">Engineers:<div id='UsersBox'></div></div>
@@ -39,23 +47,23 @@
         <tr>
             <td></td>
             <td>
-                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(270deg); -webkit-transform: rotate(270deg);" id='up'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button turn-left"  id='up'>
             </td>
             <td></td>
         </tr>
         <tr>
             <td>
-                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(180deg); -webkit-transform: rotate(180deg);" id='left'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button turn-reverse" id='left'>
             </td>
             <td></td>
             <td>
-                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(0deg); -webkit-transform: rotate(0deg);" id='right'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button" id='right'>
             </td>
         </tr>
         <tr>
             <td></td>
             <td>
-                <img src="{% static 'Basic_img/first.png' %}" class="game-button" style="max-width:40;height: 40;transform: rotate(90deg); -webkit-transform: rotate(90deg);" id='down'>
+                <img src="{% static 'Basic_img/first.png' %}" class="game-button turn-right" id='down'>
             </td>
             <td></td>
         </tr>
@@ -67,11 +75,6 @@
     <div class="modal fade" id="myModal">
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header">
-                <a href="{% url 'howtoplay' %}" target="_blank">
-                    <input type="button" class="btn btn-info" value="How to play?">
-                </a>
-            </div>
             <div class="modal-body" id="myModalBody">
                 <div id="Starter">
                     <div class="form-group">
@@ -183,6 +186,7 @@
         $('#Return-Start').click(function(){market_return_click();});
         $('#Return-Box').click(function(){list_return_click();});
         $('#Arrow-list-button').click(function(){arrows_list();});
+        clear_question()
         $(window).blur(function(){leave_site();});
         $(window).keyup(function(e){
                 if (e.keyCode === 38 || e.keyCode === 87){user_answer_change('W', '↑')}

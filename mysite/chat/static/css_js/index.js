@@ -1,5 +1,34 @@
-    var websckt = new WebSocket('wss://'+ window.location.host +'/ws/');
-    var leaboard_sckt = new WebSocket('wss://' + window.location.host + '/ws/leaboard/');
+    var websckt = new WebSocket('ws://'+ window.location.host +'/ws/');
+    var leaboard_sckt = new WebSocket('ws://' + window.location.host + '/ws/leaboard/');
+    var question_images = ["#Blue-arrow", "#Blue-twice", "#Blue-double", 
+                           "#Red-arrow", "#Red-twice", "#Red-double"];
+    var arrow_images = ["#Blue-arrow", "#Red-arrow"];
+    var twice_images = ["#Blue-twice", "#Red-twice"];
+    var double_images =["#Blue-double", "#Red-double"];
+    var questions = {
+        "W": [arrow_images, "turn-left"], 
+        "S": [arrow_images, "turn-right"], 
+        "A": [arrow_images, "turn-reverse"], 
+        "D": [arrow_images, false], 
+        "WS": [twice_images, "turn-left"], 
+        "AD": [twice_images, false], 
+        "WA": [double_images, "turn-left"], 
+        "WD": [double_images, false], 
+        "SD": [double_images, "turn-right"], 
+        "SA": [double_images, "turn-reverse"], 
+    };
+    var reverse_answer = {
+        "W": "S",
+        "S": "W",
+        "A": "D",
+        "D": "A",
+        "WS": "AD",
+        "AD": "WS",
+        "WA": "SD",
+        "WD": "AS",
+        "SD": "AW",
+        "SA": "WD",
+    };
     var question, time, user_name, interval, timeleft;
     var on_game = false, search_room=false;
     var winner = false;
@@ -81,14 +110,28 @@
             "username": user_name,
         }))
     }}
+
+    function clear_question(){
+        $('#CorrectBox').hide();
+        $('#QuestionBox').show();
+        for(i=0; i<question_images.length; i++){
+            $(question_images[i]).hide();
+            $(question_images[i]).removeClass($(question_images[i]).attr("class"));
+        }
+    }
+
     function show_question(){
-        $('#QuestionBox').html(question);
+        clear_question()
+        question_image = questions[answer][0][question]
+        if (questions[answer][1]){
+            $(question_image).addClass(questions[answer][1])
+        }
+        $(question_image).show()
         timeleft = time;
         var totaltime = timeleft;
         $('#progressBar').find("div").removeClass("bg-success")
         $('#progressBar').find("div").addClass("bg-danger")
         select_progress(totaltime, $('#progressBar'), 'question');
-        // $('#progressBar').find('div').attr("aria-valuemax", String(totaltime))
     }
     function list_users(ids, usernames){
         var html_output = "";
@@ -191,7 +234,9 @@
     }
 
     function control_answer(){
-        if (!(user_answer == '') && !(answer.search(user_answer) == '-1')){
+        true_answer = answer
+        if(question){true_answer=reverse_answer[answer]}
+        if (!(user_answer == '') && !(true_answer.search(user_answer) == '-1')){
             correct_answer();
             user_answer_change('', '');
         }
@@ -200,7 +245,8 @@
         }
     }
     function correct_answer(){
-        $('#QuestionBox').html('CORRECT!');
+        $('#QuestionBox').hide();
+        $('#CorrectBox').show();
         timeleft = 100;
         var totaltime = timeleft;
         $('#progressBar').find("div").removeClass("bg-danger")
