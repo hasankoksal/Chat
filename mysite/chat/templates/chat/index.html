@@ -23,14 +23,14 @@
 
                 </div>
                 <div class="card-body text-center" id='ParentQuestionBox'>
-                    <div id="CorrectBox">Correct!</div>
+                    <div id="CorrectBox" style="height: 120;">Correct!</div>
                     <div id="QuestionBox">
-                        <img src="{% static 'Question/BD.png' %}" style="max-width:120;height: 120;" id="Blue-arrow">
-                        <img src="{% static 'Question/BAD.png' %}" style="max-width:120;height: 120;" id="Blue-twice">
-                        <img src="{% static 'Question/BWD.png' %}" style="max-width:120;height: 120;" id="Blue-double">
-                        <img src="{% static 'Question/RD.png' %}" style="max-width:120;height: 120;" id="Red-arrow">
-                        <img src="{% static 'Question/RAD.png' %}" style="max-width:120;height: 120;" id="Red-twice">
-                        <img src="{% static 'Question/RWD.png' %}" style="max-width:120;height: 120;" id="Red-double">
+                        <img src="{% static 'Question/BD.svg' %}" style="max-width:120;height: 120;" id="Blue-arrow">
+                        <img src="{% static 'Question/BAD.svg' %}" style="max-width:120;height: 120;" id="Blue-twice">
+                        <img src="{% static 'Question/BWD.svg' %}" style="max-width:120;height: 120;" id="Blue-double">
+                        <img src="{% static 'Question/RD.svg' %}" style="max-width:120;height: 120;" id="Red-arrow">
+                        <img src="{% static 'Question/RAD.svg' %}" style="max-width:120;height: 120;" id="Red-twice">
+                        <img src="{% static 'Question/RWD.svg' %}" style="max-width:120;height: 120;" id="Red-double">
                     </div>
                     <div id="AnswerBox">Your answer:</div>
                 </div>
@@ -72,9 +72,15 @@
     <div class="col-3"></div>
     </div>
     {% include 'chat/leaboard.html' %}
+    {% include 'chat/howtoplay.html' %}
     <div class="modal fade" id="myModal">
         <div class="modal-dialog">
           <div class="modal-content">
+            <div class="modal-header">
+                <div class="ml-auto">
+                <input type="button" class="btn btn-info" value="?" id="How-to-play-opener">
+                </div>
+            </div>
             <div class="modal-body" id="myModalBody">
                 <div id="Starter">
                     <div class="form-group">
@@ -170,8 +176,8 @@
         $('#LeaboardBox').hide()
         $('#slow-button').click(function(){user_click("Slow");});
         $('#fast-button').click(function(){user_click("Fast");});
-        $('#user-name-text').focus();
-        $('#myModal').modal({backdrop:'static'});
+        $('#how-to-play-button').click(function(){how_to_play_click();})
+        $('#How-to-play').modal({backdrop:'static'});
         $('#up').click (function(){user_answer_change('W', '↑');});
         $('#down').click(function(){user_answer_change('S', '↓');});
         $('#right').click(function(){user_answer_change('D', '→');});
@@ -186,6 +192,10 @@
         $('#Return-Start').click(function(){market_return_click();});
         $('#Return-Box').click(function(){list_return_click();});
         $('#Arrow-list-button').click(function(){arrows_list();});
+        $('#How-to-play-opener').click(function(){
+            $('#myModal').modal('hide')
+            $('#How-to-play').modal({backdrop:'static'});
+        })
         clear_question()
         $(window).blur(function(){leave_site();});
         $(window).keyup(function(e){

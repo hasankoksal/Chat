@@ -46,6 +46,12 @@
     if(!sessionStorage.getItem("Arrows")){
     sessionStorage.setItem("Arrows", JSON.stringify(users_arrows_list))
     }
+
+    function how_to_play_click(){
+        $('#How-to-play').modal('hide');
+        $('#myModal').modal({backdrop:'static'});
+    }
+
     function user_answer_change(x, ans){
         user_answer = x;
         $('#AnswerBox').html("Your answer:"+ ans);
@@ -457,7 +463,9 @@
         answer = '';
         get_user_name = true;
         $("#UsersBox").html('');
-        $('#QuestionBox').html('');
+        clear_question();
+        $('#CorrectBox').hide();
+        $('#QuestionBox').show();
         $('#endModal').modal('hide');
         Modal_shower();
         $('#Starter').show();
