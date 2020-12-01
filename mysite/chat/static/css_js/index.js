@@ -1,5 +1,5 @@
-    var websckt = new WebSocket('ws://'+ window.location.host +'/ws/');
-    var leaboard_sckt = new WebSocket('ws://' + window.location.host + '/ws/leaboard/');
+    var websckt = new WebSocket('ws://arrows.engineer/ws/');
+    var leaboard_sckt = new WebSocket('ws://arrows.engineer/ws/leaboard/');
     var question_images = ["#Blue-arrow", "#Blue-twice", "#Blue-double", 
                            "#Red-arrow", "#Red-twice", "#Red-double"];
     var arrow_images = ["#Blue-arrow", "#Red-arrow"];
@@ -182,7 +182,12 @@
             websckt.close(1000);
             clearInterval(interval);
                 on_game = false;
-            }
+            nextButton.addEventListener('mouseUp', function () {
+                if (typeof gdsdk !== 'undefined' && gdsdk.showAd !== 'undefined') {
+                     gdsdk.showAd();
+                }
+            });
+        }
         if (data.type == 'lose_another'){
             on_lose_another(data.id);
         }
@@ -276,6 +281,11 @@
         End_Modal_shower("WRONG!");
         websckt.close();
         on_game = false;
+        nextButton.addEventListener('mouseUp', function () {
+            if (typeof gdsdk !== 'undefined' && gdsdk.showAd !== 'undefined') {
+                 gdsdk.showAd();
+            }
+        });
     }
 
     function show_money(){
@@ -366,7 +376,7 @@
             if (!(money<250)){
                 choose_arrow(yellow_arrows_list)
                 money = String(money - 250)
-                multipler = String(multipler + 5)
+                multipler = String(multipler + 13)
                 user_yellow_arrows += 1
             }
                 else{
@@ -381,7 +391,7 @@
             if (!(money<1000)){
                 choose_arrow(black_arrows_list)
                 money = String(money - 1000)
-                multipler = String(multipler + 15)
+                multipler = String(multipler + 50)
                 user_black_arrows += 1
             }
             else{
