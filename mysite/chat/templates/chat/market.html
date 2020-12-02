@@ -1,12 +1,17 @@
 {% load static %}
 <div class="card bg-light" id="MarketBox">
-<div class="card-header" style="display: inline;">
-<img src="{% static 'Basic_img/return.png' %}" id="Return-Start" style="max-width:10%;height: auto;">
+<div class="card-header d-flex justify-content-between" style="display: inline;">
+<div class="p-2">
+<img src="{% static 'Basic_img/return.png' %}" id="Return-Start" style="max-width:40px;height: auto;">
+</div>
+<div class="p-2">
 <ul class="pagination justify-content-center">
 <li class="page-item"><input type="button" class="btn btn-danger" value="Pink" id="pink-button"></li>
 <li class="page-item"><input type="button" class="btn btn-warning" value="Yellow" id="yellow-button"></li>
 <li class="page-item"><input type="button" class="btn btn-dark" value="Black" id="black-button"></li>
 </ul>
+</div>
+<div class="p-2"></div>
 </div>
 <div class="card-body d-flex">
   <div id="pink-area" style="text-align: center;">

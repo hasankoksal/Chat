@@ -142,7 +142,10 @@
     function list_users(ids, usernames){
         var html_output = "";
         for(i=0; i<ids.length; i++){
-            html_output += "<div class='user' id='" + ids[i] + "'>" + usernames[i] + "</div>";
+            html_output += " <div class='user' id='" + ids[i] + "'>" + usernames[i] + "</div>";
+            if(i<ids.length-1){
+                html_output +=","
+            }
         }
         $("#UsersBox").html(html_output);
     }
@@ -182,11 +185,13 @@
             websckt.close(1000);
             clearInterval(interval);
                 on_game = false;
+            if(typeof nextButton !== 'undefined'){
             nextButton.addEventListener('mouseUp', function () {
                 if (typeof gdsdk !== 'undefined' && gdsdk.showAd !== 'undefined') {
                      gdsdk.showAd();
                 }
             });
+        }
         }
         if (data.type == 'lose_another'){
             on_lose_another(data.id);
@@ -281,11 +286,13 @@
         End_Modal_shower("WRONG!");
         websckt.close();
         on_game = false;
+        if(typeof nextButton !== 'undefined'){
         nextButton.addEventListener('mouseUp', function () {
             if (typeof gdsdk !== 'undefined' && gdsdk.showAd !== 'undefined') {
                  gdsdk.showAd();
             }
         });
+    }
     }
 
     function show_money(){
