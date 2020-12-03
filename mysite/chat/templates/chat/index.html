@@ -39,6 +39,46 @@
                 <div class="card-footer d-flex justify-content-start">Engineers:<div id='UsersBox' class="d-flex justify-content-start"></div></div>
             </div>
             {% include 'chat/market.html' %}
+            <div class="card bg-light" id="myModal">
+                <div class="card-header">
+                    <div class="ml-auto">
+                        <input type="button" class="btn btn-info" value="?" id="How-to-play-opener">
+                    </div>
+                </div>
+                <div class="card-body" id="myModalBody">
+                    <div id="Starter">
+                        <div class="form-group">
+                            <label for="user-name--text">Engineer name:</label>
+                            <input type="text" class="form-control" id="user-name-text" value="{{ username }}">
+                            </div>
+                            <input type="button" class="btn btn-danger" id="market-button" value="Shop">
+                            <input type="button" class="btn btn-primary" id="slow-button" value="Play slow">
+                            <input type="button" class="btn btn-primary" id="fast-button" value="Play fast">
+                    </div>
+                    <div id="Continue">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                              <span class="sr-only">Loading...</span>
+                            </div>
+                          </div>
+                        Please wait...
+                    </div>
+                    <div class="modal-footer">
+                        <a href="https://iogames.space/" target="_blank">io games</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-light" id="endModal">
+                <div class="card-header" id="endModalHeader">
+            
+                </div>
+                <div class="card-body" id="endModalBody">
+            
+                </div>
+                <div class="card-footer">
+                    <input type="button" class="btn btn-primary" id="play-again-button" value="Play Again">
+                </div>
+            </div>        
         </div>
         <div class="col-sm-1 col-md-2 col-lg-2 col-xl-3"></div>
     </div>
@@ -75,55 +115,6 @@
     </div>
     {% include 'chat/leaboard.html' %}
     {% include 'chat/howtoplay.html' %}
-    <div class="modal fade" id="myModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-                <div class="ml-auto">
-                <input type="button" class="btn btn-info" value="?" id="How-to-play-opener">
-                </div>
-            </div>
-            <div class="modal-body" id="myModalBody">
-                <div id="Starter">
-                    <div class="form-group">
-                        <label for="user-name">Engineer name:</label>
-                        <input type="text" class="form-control" id="user-name-text" value="{{ username }}">
-                    </div>
-                    <input type="button" class="btn btn-danger" id="market-button" value="Shop">
-                    <input type="button" class="btn btn-primary" id="slow-button" value="Play slow">
-                    <input type="button" class="btn btn-primary" id="fast-button" value="Play fast">
-                </div>
-                <div id="Continue">
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border" role="status">
-                          <span class="sr-only">Loading...</span>
-                        </div>
-                      </div>
-                    Please wait...
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="https://iogames.space/" target="_blank">io games</a>
-            </div>
-          </div>
-        </div>
-    </div>
-    <div class='modal fade' id='endModal'>
-
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" id='endModalHeader'>
-
-                </div>
-                <div class="modal-body" id="endModalBody">
-
-                </div>
-                <div class="modal-footer">
-                    <input type="button" class="btn btn-primary" id="play-again-button" value="Play Again">
-                </div>
-            </div>
-        </div>
-    </div>
     <script>
     var photos = {
         "p1": "{% static 'Arrows/p1.png' %}",
@@ -176,6 +167,9 @@
         $('#MarketBox').hide()
         $('#ArrowBox').hide()
         $('#LeaboardBox').hide()
+        $('#GameBox').hide()
+        $('#buttons').hide()
+        $('#endModal').hide()
         $('#slow-button').click(function(){user_click("Slow");});
         $('#fast-button').click(function(){user_click("Fast");});
         $('#how-to-play-button').click(function(){how_to_play_click();})
@@ -195,11 +189,10 @@
         $('#Return-Box').click(function(){list_return_click();});
         $('#Arrow-list-button').click(function(){arrows_list();});
         $('#How-to-play-opener').click(function(){
-            $('#myModal').modal('hide')
             $('#How-to-play').modal({backdrop:'static'});
         })
         clear_question()
-        $(window).blur(function(){leave_site();});
+        // $(window).blur(function(){leave_site();});
         $(window).keyup(function(e){
                 if (e.keyCode === 38 || e.keyCode === 87){user_answer_change('W', '↑')}
                 if (e.keyCode === 37 || e.keyCode === 65){user_answer_change('A', '←')}

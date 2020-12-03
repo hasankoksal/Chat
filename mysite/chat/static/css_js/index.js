@@ -1,5 +1,5 @@
-    var websckt = new WebSocket('ws://arrows.engineer/ws/');
-    var leaboard_sckt = new WebSocket('ws://arrows.engineer/ws/leaboard/');
+    var websckt = new WebSocket('ws://127.0.0.1:8000/ws/');
+    var leaboard_sckt = new WebSocket('ws://127.0.0.1:8000/ws/leaboard/');
     var question_images = ["#Blue-arrow", "#Blue-twice", "#Blue-double", 
                            "#Red-arrow", "#Red-twice", "#Red-double"];
     var arrow_images = ["#Blue-arrow", "#Red-arrow"];
@@ -49,7 +49,6 @@
 
     function how_to_play_click(){
         $('#How-to-play').modal('hide');
-        $('#myModal').modal({backdrop:'static'});
     }
 
     function user_answer_change(x, ans){
@@ -57,7 +56,7 @@
         $('#AnswerBox').html("Your answer:"+ ans);
     }
     function Modal_shower(){
-    $('#myModal').modal({backdrop:'static'});
+    $('#myModal').show();
     }
     function End_Modal_shower(text){
         if (text == 'WRONG!'){
@@ -71,7 +70,7 @@
         $('#endModalBody').html(text);
         }
     $('#LeaboardBox').modal('hide')
-    $('#endModal').modal({backdrop:'static'});
+    $('#endModal').show();
     }
 
     function change_leaboard(usernames, moneys, ids, id){
@@ -177,10 +176,14 @@
             }
         }
         if (data.type == 'start'){
-            $('#myModal').modal('hide');
+            $('#myModal').hide();
+            $('#GameBox').show();
+            $('#buttons').show();
             list_users(data.ids, data.usernames);
         }
         if (data.type == 'win'){
+            $('#GameBox').hide();
+            $('#buttons').hide();
             End_Modal_shower('YOU ARE WİNNER!');
             websckt.close(1000);
             clearInterval(interval);
@@ -196,7 +199,20 @@
         if (data.type == 'lose_another'){
             on_lose_another(data.id);
         }
+        if (data.type == 'leave_doubt'){
+            clearInterval(interval)
+            End_Modal_shower("Are you leave the window?")
+            websckt.close();
+            on_game = false;
+            if(typeof nextButton !== 'undefined'){
+                nextButton.addEventListener('mouseUp', function () {
+                    if (typeof gdsdk !== 'undefined' && gdsdk.showAd !== 'undefined') {
+                        gdsdk.showAd();
+                    }
+                });
+            }
         }
+    }
         websckt.onmessage = function (e){wait_message(e);};
 
     function select_progress(totaltime, $element, why){
@@ -234,7 +250,12 @@
 
     function small_progress(timetotal, $element, why){
         timeleft -= 5;
-        $element.find('div').html(Math.floor(timeleft/10)/10)
+        if(timeleft<100){
+            $element.find('div').html(Math.floor(timeleft/10)/10)
+        }
+        else{
+            $element.find('div').html(Math.floor(Math.floor(timeleft/10)/10))
+        }
         if(timeleft > 0) {
         }
         else {
@@ -283,6 +304,8 @@
         websckt.send(JSON.stringify({
             'type': 'lose',
         }));
+        $('#GameBox').hide()
+        $('#buttons').hide()
         End_Modal_shower("WRONG!");
         websckt.close();
         on_game = false;
@@ -330,10 +353,8 @@
     }
 
     function open_market(){
-        $('#buttons').hide();
-        $('#GameBox').hide();
         $('#MarketBox').show();
-        $('#myModal').modal("hide");
+        $('#myModal').hide();
         show_market_box();
     }
 
@@ -421,20 +442,18 @@
 
     function market_return_click(){
         $('#MarketBox').hide();
-        $('#GameBox').show();
-        $('#buttons').show()
         Modal_shower();
     }
 
     function arrows_list(){
-        $('#MarketBox').hide()
-        $('#ArrowBox').show()
-        users_arrows_list = JSON.parse(sessionStorage.getItem("Arrows"))
-        arrows = ""
+        $('#MarketBox').hide();
+        $('#ArrowBox').show();
+        users_arrows_list = JSON.parse(sessionStorage.getItem("Arrows"));
+        arrows = "";
         for(i=0; i<users_arrows_list.length; i++){
             arrows += "<img src='"+ photos[users_arrows_list[i]] + "'id='" + users_arrows_list[i] + "' class='listed-arrow'>"
         }
-        $('#ArrowList').html(arrows)
+        $('#ArrowList').html(arrows);
         $(active_arrow).css("border-color", "blue");
         $(".listed-arrow").click(function(){
             change_arrows($(this).attr("src"))
@@ -483,7 +502,7 @@
         clear_question();
         $('#CorrectBox').hide();
         $('#QuestionBox').show();
-        $('#endModal').modal('hide');
+        $('#endModal').hide();
         Modal_shower();
         $('#Starter').show();
         $('#Continue').hide();

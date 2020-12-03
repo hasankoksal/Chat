@@ -42,6 +42,8 @@
 + Justify
     Acayip duygulandım şu an
     Bütün mesele text-alignmiş
+    Geçmişe not: Bootstrap bu iş için d-flex ve
+    justify-align-center falan geliştirmiş
 + İlk butonları değiştir
 + Resimlerin açısını değiştir(90, 180, 270)
 + Leaboard
@@ -67,7 +69,7 @@
 + Buy tuşunu düzelt
 
 Version 2.0
-~ Butonları ekrana orantıla
++ Butonları ekrana orantıla
 - Kutu alındığında tik çıkar
 - Sesler
 - Play with friends

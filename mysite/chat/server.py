@@ -25,6 +25,12 @@ class Room():
         self.continued_users = []
         # Yavaş veya hızlı str
         self.room_type = room_type
+        # Kullanıcılar arası senkronizasyonu sağlamak için değişken
+        self.first_correct = False
+        # Kazanan bir kullanıcı var mı
+        self.winner = False
+        # Soru yollandı mı
+        self.question_sended = False
 
         # Odaya kullanıcı girmesini kontrol eden değişken
         self.open = True
@@ -79,31 +85,71 @@ class Room():
             self.ids.append(id(bot))
 
     def control_winner(self):
+        # Silinecek botlar
         delete_bots = []
+        # Kullanıcılıların tamamı cevaplamadıysa bakma bile
+        # Bu şekilde her soru için 1 defa çalışıyor
         if len(self.continued_users) == len(self.users.keys()):
+            # Botlara çözdür
             for i in range(len(self.bots)):
-                time.sleep(0.1)
+                # Eğer bunu koymazsam yolladığım 2 ifade çakışıp
+                # bana sıkıntı çıkarıyor.
+                time.sleep(0.01)
+                # Bot yanlış yaptıysa
                 if not (self.bots[i].answer_question()):
+                    # Bütün kullanıcılara yanlış yaptığını bildir
                     for scket in self.users.keys():
                         bot_id = id(self.bots[i])
                         scket.sendall(json.dumps({
                             'type': 'lose_another',
                             'id': bot_id,
                         }).encode('utf-8'))
+                    # Silinecek botlara ekle
                     delete_bots.append(i)
+            # Bunu niye yazdığımı bilmiyorum
             delete_bots.sort(reverse=True)
+            # Botları oyundaki botlar listesinden çıkar
             for i in delete_bots:
                 del self.bots[i]
+            # Bot kalmadıysa ve tek kullanıcı kaldıysa o kazanmıştır
             if (len(self.bots) == 0) and (len(self.users.keys()) == 1):
-                time.sleep(0.1)
+                # Eğer bunu koymazsam çakışıyorlar
+                time.sleep(0.01)
+                # Kazanan kullanıcıya haber ver
                 list(self.users.keys())[0].sendall(json.dumps({
                     'type': 'win',
                 }).encode('utf-8'))
+                # Oyunun kazananı var
+                self.winner = True
+            # Eğer odada  kullanıcı kalmadıysa odayı sil
             elif len(self.users.keys()) == 0:
                 self.delete()
             else:
                 self.send_question()
                 self.continued_users = []
+                self.first_correct = False
+                self.question_sended = True
+
+    def keep_sync(self):
+        # Kullanıcılara 0.7 kayma hakkı
+        time.sleep(0.7)
+        # Eğer kullamıcılar doğru yapmadıysa kaybeder
+        if not self.question_sended:
+            for sckt in list(self.users):
+                if sckt not in self.continued_users:
+                    # Kullanıcıya ayrıldığını söyleyen mesaj yolla
+                    self.leave_doubt(sckt)
+                    # Diğer oyunculara kaybettiğini duyur
+                    self.wrong_answer(sckt)
+            # Kazananı kontrol et
+            self.control_winner()
+        else:
+            self.question_sended = False
+
+    def leave_doubt(self, sckt):
+        sckt.sendall(json.dumps({
+            'type': "leave_doubt",
+        }).encode("utf-8"))
 
     def correct_answer(self, sckt):
         self.continued_users.append(sckt)
@@ -265,6 +311,9 @@ class Server():
                 pass
         if message['type'] == 'correct':
             self.user_to_room[sckt].correct_answer(sckt)
+            if not self.user_to_room[sckt].first_correct:
+                self.user_to_room[sckt].first_correct = True
+                threading.Thread(target=self.user_to_room[sckt].keep_sync).start()
         if message['type'] == 'lose':
             self.user_to_room[sckt].wrong_answer(sckt)
 
